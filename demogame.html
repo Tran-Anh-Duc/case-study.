@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <title>game</title>
+    <script src="data.js"></script>
+</head>
+<style>
+    canvas {
+        background-image: url("https://msmobile.com.vn/upload_images/images/tai-hinh-nen-cho-may-tinh-dep-nhat-the-gioi-5.jpg");
+        background-size: cover;
+    }
+</style>
+<body>
+<canvas id="myCanvas" width=500 height=500 style="border: 1px solid black "></canvas>
+<script>
+    let Dt3Img = new Image()
+    let Dt1Img = new Image()
+    let Dt2Img = new Image()
+    Dt1Img.src = "basket.png"
+    Dt2Img.src = "pikachu.png"
+    Dt3Img.src = "egg.png"
+    let ctx1 = document.getElementById('myCanvas').getContext('2d');
+    let ctx2 = document.getElementById('myCanvas').getContext('2d');
+    let ctx3 = document.getElementById('myCanvas').getContext('2d');
+    let score = 0
+    let highScore = loadScore()
+    let timeLeft = 30
+    let time = setInterval(function () {
+        if (timeLeft <= 0) {
+            clearInterval(time)
+        }
+        timeLeft -= 1
+    }, 1000);
+
+    class Dt3 {
+        dt3x;
+        dt3y;
+        speedY;
+        width;
+        height;
+
+        constructor(dt3x, dt3y, speedY) {
+            this.dt3x = dt3x;
+            this.dt3y = dt3y;
+            this.speedY = speedY;
+            this.width = 50;
+            this.height = 33;
+        }
+
+        draw(ctx3) {
+            ctx3.beginPath()
+            ctx3.drawImage(Dt3Img, this.dt3x, this.dt3y)
+            ctx3.fill()
+            ctx3.closePath();
+        }
+
+        moveDown() {
+            this.dt3y += this.speedY
+            this.checkDown()
+        }
+
+        checkDown() {
+            if (this.dt3y >= myCanvas.height) {
+                this.dt3y = 0;
+                this.dt3x = Math.random() * (myCanvas.width - Dt3Img.height)
+            }
+        }
+    }
+
+    let dt3 = new Dt3(150, 10, 1)
+
+    class Dt1 {
+        dt1x;
+        dt1y;
+        speedX;
+        width;
+        height;
+
+        constructor(dt1x, dt1y, speedX) {
+            this.dt1x = dt1x;
+            this.dt1y = dt1y;
+            this.speedX = speedX;
+            this.width = 100;
+            this.height = 100;
+        }
+
+        draw(ctx1) {
+            ctx1.beginPath()
+            ctx1.drawImage(Dt1Img, this.dt1x, this.dt1y)
+            ctx1.fill()
+            ctx1.closePath();
+        }
+    }
+
+    let dt1 = new Dt1(200, 380, 25);
+
+    class Dt2 {
+        dt2x;
+        dt2y;
+        speedY;
+        width;
+        height;
+
+        constructor(dt2x, dt2y, speedY) {
+            this.dt2x = dt2x;
+            this.dt2y = dt2y;
+            this.speedY = speedY;
+            this.width = 50;
+            this.height = 33;
+        }
+
+        draw(ctx2) {
+            ctx2.beginPath()
+            ctx2.drawImage(Dt2Img, this.dt2x, this.dt2y)
+            ctx2.fill()
+            ctx2.closePath();
+        }
+
+        moveDown() {
+            this.dt2y += this.speedY
+            this.checkDown()
+        }
+
+        checkDown() {
+            if (this.dt2y >= myCanvas.height) {
+                this.dt2y = 0;
+                this.dt2x = Math.random() * (myCanvas.width - Dt2Img.height)
+            }
+        }
+    }
+
+    let dt2 = new Dt2(10, 10, 1)
+
+    function imgTouching(x1, y1, img1, x2, y2, img2) {
+        if (x1 > x2 + img2.width || x1 + img1.width < x2 || y1 > y2 + img2.height || y1 + img1.height <= y2) {
+            return false;
+        }
+        return true
+    }
+
+    function reStart() {
+        window.location.reload()
+    }
+
+    function RunGame() {
+        ctx1.clearRect(0, 0, myCanvas.width, myCanvas.height)
+        ctx2.clearRect(0, 0, myCanvas.width, myCanvas.height)
+        ctx3.clearRect(0, 0, myCanvas.width, myCanvas.height)
+        ctx2.font = "bold 20px Arial"
+        ctx2.fillText('highscore' + highScore, 100, 100)
+        ctx2.fillText('  điểm ' + score, 0, 20)
+        ctx2.fillText('  thời gian' + timeLeft, 0, 40)
+        dt1.draw(ctx1)
+        if (timeLeft <= 0) {
+            clearInterval(time)
+            // ctx1.fillText('điểm cao'+ highScore,300,300)
+            ctx1.fillText('kết thúc', 150, 250)
+            ctx1.fillText('enter bắt đầu lại', 280, 250)
+            if (score > highScore) {
+                saveScore(score)
+            }
+
+        } else {
+            dt3.moveDown()
+            dt3.draw(ctx3)
+            check1()
+            dt2.moveDown()
+            dt2.draw(ctx2)
+            check();
+        }
+        requestAnimationFrame(RunGame)
+    }
+
+    function check() {
+        if (imgTouching(dt1.dt1x, dt1.dt1y, Dt1Img, dt2.dt2x, dt2.dt2y, Dt2Img)) {
+            dt2.speedY += 1
+            score += 1;
+            dt2.dt2x = -Dt2Img.width
+            dt2.dt2y = 0
+            dt2.dt2x = Math.random() * (500 - Dt2Img.height)
+        }
+    }
+    function check1() {
+        if (imgTouching(dt1.dt1x, dt1.dt1y, Dt1Img, dt3.dt3x, dt3.dt3y, Dt3Img)) {
+            dt3.speedY += 0.5
+            score += 1;
+            dt3.dt3x = -Dt3Img.width
+            dt3.dt3y = 0
+            dt3.dt3x = Math.random() * (500 - Dt3Img.height)
+        }
+    }
+
+    window.addEventListener("keydown", move)
+
+    function move(event) {
+        if (event.keyCode === 37 && dt1.dt1x > 0) {
+            dt1.dt1x -= dt1.speedX
+        }
+        if (event.keyCode === 39 && dt1.dt1x + Dt1Img.width < myCanvas.width) {
+            dt1.dt1x += dt1.speedX
+        }
+        if (event.keyCode === 13) {
+            reStart()
+        }
+    }
+    RunGame()
+</script>
+
+
+</body>
+</html>
