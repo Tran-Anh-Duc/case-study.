@@ -174,7 +174,7 @@
 
     function check() {
         if (imgTouching(basket.basketx, basket.baskety, basketImg, egg.eggx, egg.eggy, eggImg)) {
-            egg.speedY += 1
+            egg.speedY += 0.5
             score += 1;
             egg.eggx = -eggImg.width
             egg.eggy = 0
@@ -184,7 +184,7 @@
     function check1() {
         if (imgTouching(basket.basketx, basket.baskety, basketImg, pikachu.pikachux, pikachu.pikachuy, pikachuImg)) {
             pikachu.speedY += 0.5
-            score += 1;
+            score -= 1;
             pikachu.pikachux = -pikachuImg.width
             pikachu.pikachuy = 0
             pikachu.pikachux = Math.random() * (500 - pikachuImg.height)
